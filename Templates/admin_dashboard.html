@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #000000, #0f3d2e);
+      color: white;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    h2 {
+      color: #00ff99;
+      font-weight: 700;
+    }
+
+    .container {
+      background: #0b0b0b;
+      padding: 35px;
+      border-radius: 18px;
+      box-shadow: 0 0 40px rgba(0, 255, 140, 0.25);
+      padding-bottom: 120px; /* Prevent overlap with bottom bar */
+    }
+
+    .job-card {
+      background: #111;
+      border: 1px solid #1f1f1f;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .job-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 25px rgba(0, 255, 140, 0.4);
+    }
+
+    .badge-open {
+      background-color: #00ff99;
+      color: black;
+      font-weight: 600;
+    }
+
+    .badge-closed {
+      background-color: #dc3545;
+      font-weight: 600;
+    }
+
+    /* Bottom fixed action bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #0b0b0b;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 -4px 20px rgba(0, 255, 140, 0.2);
+      z-index: 1000;
+    }
+
+    .btn-success {
+      background-color: #00ff99;
+      border: none;
+      color: black;
+      font-weight: 600;
+    }
+
+    .btn-success:hover {
+      background-color: #00cc7a;
+      color: black;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="container mt-5">
+  <h2>HR / Admin Dashboard</h2>
+
+  <hr>
+
+  {% for job in jobs %}
+  <div class="job-card" onclick="window.location='/admin/job-details/{{ job[0] }}'">
+
+    <div class="d-flex justify-content-between align-items-center">
+      
+      <div>
+        <h4 class="mb-1">
+          {{ job[1] }}
+        </h4>
+
+        {% if job[2] == 'Open' %}
+          <span class="badge badge-open">Open</span>
+        {% else %}
+          <span class="badge badge-closed">Closed</span>
+        {% endif %}
+      </div>
+
+      <div class="text-end">
+        <small>Total Applicants</small>
+        <h5 style="color:#00ff99;">{{ job[3] }}</h5>
+      </div>
+
+    </div>
+
+  </div>
+
+  {% else %}
+    <p>No jobs created yet.</p>
+  {% endfor %}
+
+</div>
+
+<!-- Bottom Fixed Action Bar -->
+<div class="bottom-bar">
+  <a href="/add-job" class="btn btn-success">Add New Job</a>
+  <a href="/logout" class="btn btn-danger">Logout</a>
+</div>
+
+</body>
+</html>

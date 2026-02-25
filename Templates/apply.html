@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ job_title }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+  body {
+    background: linear-gradient(135deg, #000000, #0f3d2e);
+    color: white;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  h2 {
+    color: #00ff99;
+    font-weight: 700;
+  }
+
+  hr {
+    border-color: #1f1f1f;
+  }
+
+  .container {
+    background: #0b0b0b;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 0 40px rgba(0, 255, 140, 0.25);
+  }
+
+  .form-label {
+    color: #cfcfcf;
+  }
+
+  .form-control {
+    background: #111;
+    border: 1px solid #1f1f1f;
+    color: white;
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .form-control:focus {
+    background: #111;
+    color: white;
+    border-color: #00ff99;
+    box-shadow: none;
+  }
+
+  .btn-primary {
+    background-color: #00ff99;
+    border: none;
+    color: black;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 10px;
+  }
+
+  .btn-primary:hover {
+    background-color: #00cc7a;
+    color: black;
+  }
+
+  .skill-tag {
+    display: inline-block;
+    background: #00ff99;
+    color: black;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin: 4px;
+    font-size: 14px;
+  }
+
+  .skill-tag span {
+    margin-left: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+  <a class="navbar-brand" href="/">Careers</a>
+
+  <div class="ms-auto">
+    {% if session.get("user") %}
+      <span class="text-white me-3">
+        Hello {{ session.get("first_name") }}, hope you have a great day 🙂
+      </span>
+
+      <a href="/user-dashboard" class="btn btn-info btn-sm me-2">
+        My Applications
+      </a>
+
+      <a href="/logout" class="btn btn-danger btn-sm">
+        Logout
+      </a>
+
+    {% else %}
+      <a href="/user-login" class="btn btn-success btn-sm me-2">User Login</a>
+      <a href="/user-register" class="btn btn-primary btn-sm me-2">Register</a>
+      <a href="/login" class="btn btn-warning btn-sm">HR / Admin</a>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <h2>Apply for Job</h2>
+  <hr>
+
+  <form method="POST" enctype="multipart/form-data">
+
+    <!-- Resume -->
+    <div class="mb-3">
+      <label class="form-label">Upload Resume (PDF)</label>
+      <input type="file" name="resume" class="form-control" required>
+    </div>
+
+    <!-- Current Employer -->
+    <div class="mb-3">
+      <label class="form-label">Current Employer</label>
+      <input type="text" name="current_employer" class="form-control" required>
+    </div>
+
+    <!-- Start Date -->
+    <div class="mb-3">
+      <label class="form-label">Start Date</label>
+      <input type="date" name="start_date" class="form-control" required>
+    </div>
+
+    <!-- Currently Working -->
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="currentlyWorking" name="currently_working">
+      <label class="form-check-label">
+        I am currently working here
+      </label>
+    </div>
+
+    <!-- End Date -->
+    <div class="mb-3">
+      <label class="form-label">End Date</label>
+      <input type="date" id="endDate" name="end_date" class="form-control">
+    </div>
+
+    <!-- Current CTC -->
+    <div class="mb-3">
+      <label class="form-label">Current CTC</label>
+      <input type="text" name="current_ctc" class="form-control" placeholder="e.g. 6 LPA">
+    </div>
+
+    <!-- Expected CTC -->
+    <div class="mb-3">
+      <label class="form-label">Expected CTC</label>
+      <input type="text" name="expected_ctc" class="form-control" placeholder="e.g. 10 LPA">
+    </div>
+
+    <!-- Notice Period -->
+    <div class="mb-3">
+      <label class="form-label">Notice Period</label>
+      <input type="text" name="notice_period" class="form-control" placeholder="e.g. 30 Days / Immediate">
+    </div>
+
+    <!-- Skills -->
+    <div class="mb-3">
+      <label class="form-label">Skills</label>
+      <input type="text" id="skillInput" class="form-control" placeholder="Type skill and press space or comma">
+      <div id="skillContainer"></div>
+      <input type="hidden" name="skills" id="skillsHidden">
+    </div>
+
+    <button class="btn btn-primary">Submit Application</button>
+  </form>
+</div>
+
+<script>
+// Disable End Date if currently working
+document.getElementById("currentlyWorking").addEventListener("change", function() {
+  const endDate = document.getElementById("endDate");
+  endDate.disabled = this.checked;
+  if (this.checked) endDate.value = "";
+});
+
+// Skill tag logic
+const skillInput = document.getElementById("skillInput");
+const skillContainer = document.getElementById("skillContainer");
+const skillsHidden = document.getElementById("skillsHidden");
+
+let skills = [];
+
+skillInput.addEventListener("keyup", function(e) {
+  if (e.key === " " || e.key === ",") {
+    e.preventDefault();
+    const skill = skillInput.value.trim().replace(",", "");
+    if (skill !== "" && !skills.includes(skill)) {
+      skills.push(skill);
+      renderSkills();
+    }
+    skillInput.value = "";
+  }
+});
+
+function renderSkills() {
+  skillContainer.innerHTML = "";
+  skills.forEach((skill, index) => {
+    const tag = document.createElement("div");
+    tag.className = "skill-tag";
+    tag.innerHTML = skill + '<span onclick="removeSkill(' + index + ')">×</span>';
+    skillContainer.appendChild(tag);
+  });
+
+  skillsHidden.value = skills.join(",");
+}
+
+function removeSkill(index) {
+  skills.splice(index, 1);
+  renderSkills();
+}
+</script>
+
+</body>
+</html>

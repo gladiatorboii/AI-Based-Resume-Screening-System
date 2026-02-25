@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Application Overview</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #000000, #0f3d2e);
+      color: white;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .overview-card {
+      background: #111;
+      border: 1px solid #1f1f1f;
+      border-radius: 15px;
+      padding: 35px;
+      box-shadow: 0 0 30px rgba(0, 255, 140, 0.25);
+    }
+
+
+    .section-title {
+      color: #00ff99;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .skill-badge {
+      margin: 4px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .score-box {
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    hr {
+      border-color: #222;
+    }
+
+    .circular-progress {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .inner-circle {
+      width: 120px;
+      height: 120px;
+      background: #111;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: bold;
+      color: #00ff99;
+    }
+  </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <a class="navbar-brand" href="/">Careers</a>
+
+    <div class="ms-auto">
+      {% if session.get("user") %}
+      <!-- USER LOGGED IN -->
+      <span class="text-white me-3">
+        Hello {{ session.get("first_name") }}, hope you have a great day 🙂
+      </span>
+
+      <a href="/user-dashboard" class="btn btn-info btn-sm me-2">
+        My Applications
+      </a>
+
+      <a href="/logout" class="btn btn-danger btn-sm">
+        Logout
+      </a>
+
+      {% else %}
+      <!-- NOT LOGGED IN -->
+      <a href="/user-login" class="btn btn-success btn-sm me-2">User Login</a>
+      <a href="/user-register" class="btn btn-primary btn-sm me-2">Register</a>
+      <a href="/login" class="btn btn-warning btn-sm">HR / Admin</a>
+      {% endif %}
+    </div>
+  </nav>
+
+
+  <div class="container mt-5">
+    <div class="overview-card">
+
+      <!-- Job Title -->
+      <h2>{{ app[15] }}</h2>
+
+      <!-- Status -->
+      <p>
+        Status:
+        {% if app[5] == "Shortlisted" %}
+        <span class="badge bg-success">Shortlisted</span>
+        {% elif app[5] == "Rejected" %}
+        <span class="badge bg-danger">Rejected</span>
+        {% else %}
+        <span class="badge bg-warning text-dark">Pending</span>
+        {% endif %}
+      </p>
+
+      <!-- Applied Date -->
+      <p><strong>Applied On:</strong> {{ app[14] }}</p>
+
+      <hr>
+
+      <!-- ATS Score -->
+      <div class="d-flex justify-content-center mt-3">
+        <div class="circular-progress" style="background: conic-gradient(#00ff99 {{ app[4] }}%, #222 {{ app[4] }}%);">
+          <div class="inner-circle">
+            {{ app[4] }}%
+          </div>
+        </div>
+      </div>
+
+
+
+      <hr>
+
+      <!-- Professional Details -->
+      <div class="section-title">Professional Details</div>
+
+      <p><strong>Current Employer:</strong> {{ app[6] }}</p>
+
+      <p>
+        <strong>Experience:</strong>
+        {{ app[7] }} to
+        {% if app[9] == "Yes" %}
+        Present (Currently Working)
+        {% else %}
+        {{ app[8] }}
+        {% endif %}
+      </p>
+
+      <hr>
+
+      <!-- Compensation -->
+      <div class="section-title">Compensation</div>
+
+      <p>
+        <strong>Current CTC:</strong> {{ app[10] }} |
+        <strong>Expected CTC:</strong> {{ app[11] }}
+      </p>
+
+      <p><strong>Notice Period:</strong> {{ app[12] }}</p>
+
+      <hr>
+
+      <!-- Skill Analysis -->
+      <div class="section-title">Skill Analysis</div>
+
+      <!-- Matching -->
+      <h6 class="text-success mt-3">Matching Skills</h6>
+      {% if matching %}
+      {% for skill in matching %}
+      <span class="badge bg-success skill-badge">{{ skill }}</span>
+      {% endfor %}
+      {% else %}
+      <p class="text-muted">No matching skills found.</p>
+      {% endif %}
+
+      <!-- Missing -->
+      <h6 class="text-danger mt-4">Missing Required Skills</h6>
+      {% if missing %}
+      {% for skill in missing %}
+      <span class="badge bg-danger skill-badge">{{ skill }}</span>
+      {% endfor %}
+      {% else %}
+      <p class="text-muted">No missing skills.</p>
+      {% endif %}
+
+      <!-- Irrelevant -->
+      <h6 class="text-warning mt-4">Irrelevant Skills</h6>
+      {% if irrelevant %}
+      {% for skill in irrelevant %}
+      <span class="badge bg-warning text-dark skill-badge">{{ skill }}</span>
+      {% endfor %}
+      {% else %}
+      <p class="text-muted">No irrelevant skills.</p>
+      {% endif %}
+
+      <hr>
+
+      <!-- Resume -->
+      <div class="section-title">Resume</div>
+      <a href="/resumes/{{ app[3] }}" target="_blank" class="btn btn-success btn-sm">
+        View Resume
+      </a>
+
+      <a href="/user-dashboard" class="btn btn-secondary btn-sm">
+        Back to Dashboard
+      </a>
+
+    </div>
+  </div>
+
+</body>
+
+</html>

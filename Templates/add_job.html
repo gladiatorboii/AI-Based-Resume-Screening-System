@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Add Job</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #000000, #0f3d2e);
+      color: white;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    h3 {
+      color: #00ff99;
+      font-weight: 700;
+    }
+
+    hr {
+      border-color: #1f1f1f;
+    }
+
+    .container {
+      background: #0b0b0b;
+      padding: 35px;
+      border-radius: 18px;
+      box-shadow: 0 0 40px rgba(0, 255, 140, 0.25);
+    }
+
+    .form-control {
+      background: #111;
+      border: 1px solid #1f1f1f;
+      color: white;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .form-control:focus {
+      background: #111;
+      color: white;
+      border-color: #00ff99;
+      box-shadow: none;
+    }
+
+    textarea {
+      min-height: 140px;
+    }
+
+    .btn-success {
+      background-color: #00ff99;
+      border: none;
+      color: black;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+
+    .btn-success:hover {
+      background-color: #00cc7a;
+      color: black;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container mt-5 col-md-6">
+    <h3>Add New Job</h3>
+    <hr>
+
+    <form method="POST">
+      <input type="text" name="title" class="form-control mb-3" placeholder="Job Title" required>
+      <textarea name="description" class="form-control mb-3" placeholder="Job Description" required></textarea>
+
+      <select name="experience_level" class="form-control mb-3" required>
+        <option value="" disabled selected>Select Experience Level</option>
+        <option value="Intern">Intern</option>
+        <option value="Fresher">Fresher</option>
+        <option value="Professional">Junior</option>
+        <option value="Senior">Senior</option>
+        <option value="Expert">Expert</option>
+
+      </select>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="immediate_joiner" id="immediateJoiner">
+        <label class="form-check-label" for="immediateJoiner">
+          Immediate Joiner Preferred
+        </label>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Required Skills</label>
+
+        <!-- Visible Tag Input -->
+        <div id="skills-container" class="form-control d-flex flex-wrap" style="min-height:45px; cursor:text;">
+          <input type="text" id="skills-input" style="border:none; outline:none; flex:1;"
+            placeholder="Type skill and press space or comma">
+        </div>
+
+        <!-- Hidden Input (sent to backend) -->
+        <input type="hidden" name="skills" id="skills-hidden">
+      </div>
+
+
+
+
+      <button class="btn btn-success">Add Job</button>
+    </form>
+
+  </div>
+
+
+
+  <script>
+    const input = document.getElementById("skills-input");
+    const container = document.getElementById("skills-container");
+    const hiddenInput = document.getElementById("skills-hidden");
+
+    let skills = [];
+
+    function updateHiddenInput() {
+      hiddenInput.value = skills.join(",");
+    }
+
+    function createTag(skill) {
+      const tag = document.createElement("span");
+      tag.className = "badge bg-success m-1";
+      tag.innerHTML = skill + " &times;";
+
+      tag.onclick = function () {
+        skills = skills.filter(s => s !== skill);
+        tag.remove();
+        updateHiddenInput();
+      };
+
+      container.insertBefore(tag, input);
+    }
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "," || e.key === "Enter") {
+        e.preventDefault();
+
+        let value = input.value.trim().replace(",", "");
+        if (value !== "" && !skills.includes(value)) {
+          skills.push(value);
+          createTag(value);
+          updateHiddenInput();
+        }
+
+        input.value = "";
+      }
+    });
+  </script>
+
+
+</body>
+
+</html>
